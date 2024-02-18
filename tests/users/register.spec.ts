@@ -1,7 +1,28 @@
 import request from "supertest";
 import app from "../../src/app";
+import { DataSource } from "typeorm";
+import { AppDataSource } from "../../src/config/data-source";
+import { truncateDBTables } from "../utils";
+import { User } from "../../src/entity/User";
 
 describe("POST /auth/register", () => {
+  let connection: DataSource;
+
+  beforeAll(async () => {
+    // Create DB connection - before all the testcases
+    connection = await AppDataSource.initialize();
+  });
+
+  beforeEach(async () => {
+    // TRUNCATE Database - before each testcase to see proper result of each testcases
+    await truncateDBTables(connection);
+  });
+
+  afterAll(async () => {
+    // Close DB connection
+    await connection.destroy();
+  });
+
   describe("Given all fields", () => {
     it("should return 201 status code", async () => {
       // AAA rule
@@ -40,9 +61,18 @@ describe("POST /auth/register", () => {
         email: "pankaj@testemail.com",
         password: "secret",
       };
+
       // A - Act
       await request(app).post("/auth/register").send(userData);
+
       // A - Assert
+      const userRepository = connection.getRepository(User);
+      const users = await userRepository.find();
+
+      expect(users).toHaveLength(1);
+      expect(users[0].firstName).toBe(userData.firstName);
+      expect(users[0].lastName).toBe(userData.lastName);
+      expect(users[0].email).toBe(userData.email);
     });
   });
   describe("Fields are missing", () => {});
