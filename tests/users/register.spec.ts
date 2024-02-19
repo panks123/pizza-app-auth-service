@@ -2,8 +2,8 @@ import request from "supertest";
 import app from "../../src/app";
 import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config/data-source";
-import { truncateDBTables } from "../utils";
 import { User } from "../../src/entity/User";
+import { Roles } from "../../src/constants";
 
 describe("POST /auth/register", () => {
   let connection: DataSource;
@@ -14,8 +14,8 @@ describe("POST /auth/register", () => {
   });
 
   beforeEach(async () => {
-    // TRUNCATE Database - before each testcase to see proper result of each testcases
-    await truncateDBTables(connection);
+    await connection.dropDatabase();
+    await connection.synchronize();
   });
 
   afterAll(async () => {
@@ -93,6 +93,25 @@ describe("POST /auth/register", () => {
         typeof (response.body as { id: number | string }).id === "string" ||
           typeof (response.body as { id: number | string }).id === "number",
       ).toBe(true);
+    });
+
+    it("should aassign a 'customer' role", async () => {
+      // A - Arrange data
+      const userData = {
+        firstName: "Pankaj",
+        lastName: "Kumar",
+        email: "pankaj@testemail.com",
+        password: "secret",
+      };
+
+      // A - Act
+      await request(app).post("/auth/register").send(userData);
+
+      // A - Assert
+      const userRepository = connection.getRepository(User);
+      const users = await userRepository.find();
+      expect(users[0]).toHaveProperty("role");
+      expect(users[0].role).toBe(Roles.CUSTOMER);
     });
   });
   describe("Fields are missing", () => {});
