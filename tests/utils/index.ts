@@ -8,3 +8,19 @@ export const truncateDBTables = async (connection: DataSource) => {
     await repository.clear(); // truncate the table
   }
 };
+
+export const isJWT = (token: string | null): boolean => {
+  if (!token) return false;
+
+  const parts = token.split(".");
+  if (parts.length !== 3) return false;
+
+  try {
+    parts.forEach((part) => {
+      Buffer.from(part, "base64").toString("utf-8");
+    });
+  } catch (e) {
+    return false;
+  }
+  return true;
+};
