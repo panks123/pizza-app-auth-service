@@ -30,7 +30,7 @@ describe("POST /auth/self", () => {
     await connection.destroy();
   });
 
-  describe("GIven all fields", () => {
+  describe("Given all fields", () => {
     it("should return 200 status code", async () => {
       const accessToken = jwks.token({ sub: "1", role: Roles.CUSTOMER });
       const response = await request(app)
@@ -90,6 +90,25 @@ describe("POST /auth/self", () => {
         .send();
 
       expect(response.body).not.toHaveProperty("password");
+    });
+
+    it("should return 401 status ocde if token does not exist", async () => {
+      // Register user
+      const userData = {
+        firstName: "Panka",
+        lastName: "Kumar",
+        email: "pankaj@testemail.com",
+        password: "secret123",
+      };
+      const userRepository = connection.getRepository(User);
+      await userRepository.save({
+        ...userData,
+        role: Roles.CUSTOMER,
+      });
+
+      const response = await request(app).get("/auth/self").send();
+
+      expect(response.statusCode).toBe(401);
     });
   });
 });
