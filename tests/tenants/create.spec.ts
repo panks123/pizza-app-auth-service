@@ -32,7 +32,7 @@ describe("POST /tenants", () => {
   });
 
   describe("Given all fields", () => {
-    it("return a 201 status code", async () => {
+    it("return 201 status code", async () => {
       const tenantData = {
         name: "Tenant 1",
         address: "Tenant 1 address",
@@ -97,6 +97,34 @@ describe("POST /tenants", () => {
 
       const tenants = await tenantRepository.find();
       expect(tenants.length).toBe(0);
+    });
+  });
+
+  describe("Fields are missing", () => {
+    it("should return 400 status code if name field is missing", async () => {
+      const tenantData = {
+        address: "Tenant 1 address",
+      };
+      const adminToken = jwks.token({ sub: "1", role: Roles.ADMIN });
+      const response = await request(app)
+        .post("/tenants")
+        .set("Cookie", [`accessToken=${adminToken}`])
+        .send(tenantData);
+
+      expect(response.statusCode).toBe(400);
+    });
+
+    it("should return 400 status code if address field is missing", async () => {
+      const tenantData = {
+        name: "Tenant 1",
+      };
+      const adminToken = jwks.token({ sub: "1", role: Roles.ADMIN });
+      const response = await request(app)
+        .post("/tenants")
+        .set("Cookie", [`accessToken=${adminToken}`])
+        .send(tenantData);
+
+      expect(response.statusCode).toBe(400);
     });
   });
 });
