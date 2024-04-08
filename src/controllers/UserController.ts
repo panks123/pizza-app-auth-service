@@ -26,6 +26,7 @@ export class UserController {
         role,
         tenantId,
       });
+      this.logger.info("User has been successfully created", { id: user.id });
       res.status(201).json({ id: user.id });
     } catch (err) {
       next(err);
@@ -47,6 +48,8 @@ export class UserController {
 
     const { firstName, lastName, role } = req.body;
     try {
+      this.logger.debug("Request for updating user", { id: Number(userId) });
+
       const user = await this.userService.findById(Number(userId));
       if (!user) {
         const error = createHttpError(400, "User does not exist");
@@ -100,6 +103,9 @@ export class UserController {
 
   async remove(req: Request, res: Response, next: NextFunction) {
     const userId = req.params.id;
+
+    this.logger.debug("Request for deleting user", { id: Number(userId) });
+
     if (isNaN(Number(userId))) {
       return next(createHttpError(400, "Invalid uel param"));
     }
