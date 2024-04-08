@@ -1,14 +1,20 @@
 import { Repository } from "typeorm";
 import { User } from "../entity/User";
-import { UserData } from "../types";
+import { LimitedUserData, UserData } from "../types";
 import createHttpError from "http-errors";
-import { Roles } from "../constants";
 import bcrypt from "bcrypt";
 
 export class UserService {
   constructor(private userRepository: Repository<User>) {}
 
-  async create({ firstName, lastName, email, password }: UserData) {
+  async create({
+    firstName,
+    lastName,
+    email,
+    password,
+    role,
+    tenantId,
+  }: UserData) {
     const user = await this.userRepository.findOne({ where: { email } });
     if (user) {
       const error = createHttpError(400, "Email already exists!");
@@ -24,7 +30,8 @@ export class UserService {
         lastName,
         email,
         password: hashedPassword,
-        role: Roles.CUSTOMER,
+        role,
+        tenant: tenantId ? { id: tenantId } : undefined,
       });
       return user;
     } catch (err) {
@@ -36,11 +43,12 @@ export class UserService {
     }
   }
 
-  async findByEmail(email: string) {
+  async findByEmailWithPassword(email: string) {
     return await this.userRepository.findOne({
       where: {
         email,
       },
+      select: ["id", "email", "firstName", "lastName", "password", "role"],
     });
   }
 
@@ -48,5 +56,36 @@ export class UserService {
     return await this.userRepository.findOne({
       where: { id },
     });
+  }
+
+  async getAll() {
+    return await this.userRepository.find();
+  }
+
+  async updateById(userId: number, userData: LimitedUserData) {
+    const { firstName, lastName, role } = userData;
+    try {
+      return await this.userRepository.update(userId, {
+        firstName,
+        lastName,
+        role,
+      });
+    } catch (err) {
+      const error = createHttpError(
+        500,
+        "Failed to update the user in the database",
+      );
+      throw error;
+    }
+  }
+
+  async deleteById(userId: number) {
+    try {
+      // return await this.userRepository.update( userId, { firstName, lastName, role } );
+      return await this.userRepository.delete({ id: userId });
+    } catch (err) {
+      const error = createHttpError(500, "Failed to delete the user");
+      throw error;
+    }
   }
 }

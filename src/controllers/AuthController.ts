@@ -7,6 +7,7 @@ import { validationResult } from "express-validator";
 import { JwtPayload } from "jsonwebtoken";
 import { TokenService } from "../services/TokenService";
 import { CredentialService } from "../services/CredentialService";
+import { Roles } from "../constants";
 
 export class AuthController {
   constructor(
@@ -55,6 +56,7 @@ export class AuthController {
         lastName,
         email,
         password,
+        role: Roles.CUSTOMER,
       });
 
       if (user) {
@@ -102,7 +104,7 @@ export class AuthController {
     });
     try {
       // Check if username (email in our case) exists in DB
-      const user = await this.userService.findByEmail(email);
+      const user = await this.userService.findByEmailWithPassword(email);
       if (!user) {
         const error = createHttpError(400, "Email or Password does not match");
         throw error;

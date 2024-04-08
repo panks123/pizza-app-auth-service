@@ -130,7 +130,7 @@ describe("POST /auth/register", () => {
 
       // A - Assert
       const userRepository = connection.getRepository(User);
-      const users = await userRepository.find();
+      const users = await userRepository.find({ select: ["password"] });
       expect(users[0].password).not.toBe(userData.password);
       expect(users[0].password).toHaveLength(60); // bcrypt hash length
       expect(users[0].password).toMatch(/^\$2b\$\d+\$/);
