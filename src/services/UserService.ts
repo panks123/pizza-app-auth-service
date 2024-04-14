@@ -81,7 +81,6 @@ export class UserService {
 
   async deleteById(userId: number) {
     try {
-      // return await this.userRepository.update( userId, { firstName, lastName, role } );
       return await this.userRepository.delete({ id: userId });
     } catch (err) {
       const error = createHttpError(500, "Failed to delete the user");
