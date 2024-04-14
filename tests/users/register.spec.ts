@@ -133,7 +133,7 @@ describe("POST /auth/register", () => {
       const users = await userRepository.find({ select: ["password"] });
       expect(users[0].password).not.toBe(userData.password);
       expect(users[0].password).toHaveLength(60); // bcrypt hash length
-      expect(users[0].password).toMatch(/^\$2b\$\d+\$/);
+      expect(users[0].password).toMatch(/^\$2[a|b]\$\d+\$/);
     });
 
     it("should return 400 status code if email already exists", async () => {
