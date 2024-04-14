@@ -1,1 +1,0 @@
-typescript build command- in windows powershell --> $env:NODE_ENV="dev"; node src/server.js
