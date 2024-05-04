@@ -1,6 +1,6 @@
 import { Repository } from "typeorm";
 import { User } from "../entity/User";
-import { LimitedUserData, UserData } from "../types";
+import { LimitedUserData, PaginationQueryParams, UserData } from "../types";
 import createHttpError from "http-errors";
 import bcrypt from "bcryptjs";
 
@@ -61,8 +61,15 @@ export class UserService {
     });
   }
 
-  async getAll() {
-    return await this.userRepository.find();
+  async getAll(validatedQuery: PaginationQueryParams) {
+    const { currentPage, perPage } = validatedQuery;
+    const queryBuilder = this.userRepository.createQueryBuilder();
+    const result = await queryBuilder
+      .skip((currentPage - 1) * perPage)
+      .take(perPage)
+      .getManyAndCount();
+
+    return result;
   }
 
   async updateById(userId: number, userData: LimitedUserData) {

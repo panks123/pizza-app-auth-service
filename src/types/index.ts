@@ -48,3 +48,8 @@ export interface LimitedUserData {
   lastName: string;
   role: string;
 }
+
+export interface PaginationQueryParams {
+  currentPage: number;
+  perPage: number;
+}
