@@ -58,7 +58,7 @@ describe("GET /users", () => {
         .set("Cookie", [`accessToken=${adminToken}`])
         .send();
 
-      expect(Array.isArray(response.body)).toBeTruthy();
+      expect(Array.isArray(response.body.data)).toBeTruthy();
     });
 
     it("should return 401 status code if user is not authenticated", async () => {
