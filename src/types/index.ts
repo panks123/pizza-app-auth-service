@@ -52,4 +52,6 @@ export interface LimitedUserData {
 export interface PaginationQueryParams {
   currentPage: number;
   perPage: number;
+  q: string;
+  role: string;
 }
