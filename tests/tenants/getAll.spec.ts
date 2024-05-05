@@ -59,8 +59,8 @@ describe("GET /tenants", () => {
 
       const response = await request(app).get("/tenants").send();
 
-      expect(Array.isArray(response.body)).toBeTruthy();
-      expect(response.body).toHaveLength(2);
+      expect(Array.isArray(response.body.data)).toBeTruthy();
+      expect(response.body.data).toHaveLength(2);
     });
   });
 });
