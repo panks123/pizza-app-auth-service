@@ -1,6 +1,6 @@
 import { Repository } from "typeorm";
 import { Tenant } from "../entity/Tenant";
-import { ITenant } from "../types";
+import { ITenant, PaginationQueryParams } from "../types";
 
 export class TenantService {
   constructor(private tenantRepository: Repository<Tenant>) {}
@@ -8,8 +8,21 @@ export class TenantService {
     return await this.tenantRepository.save(tenantData);
   }
 
-  async getAll() {
-    return await this.tenantRepository.find();
+  async getAll(validatedQuery: PaginationQueryParams) {
+    const { currentPage, perPage, q } = validatedQuery;
+    const queryBuilder = this.tenantRepository.createQueryBuilder("tenant");
+    if (q) {
+      const searchTerm = `%${q}%`;
+      queryBuilder.where("CONCAT(tenant.name, ' ', tenant.address) ILike :q", {
+        q: searchTerm,
+      });
+    }
+    const result = await queryBuilder
+      .skip((currentPage - 1) * perPage)
+      .take(perPage)
+      .orderBy("tenant.id", "DESC")
+      .getManyAndCount();
+    return result;
   }
 
   async getById(tenantId: number) {

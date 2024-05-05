@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { TenantService } from "../services/TenantService";
-import { CreateTenantRequest } from "../types";
+import { CreateTenantRequest, PaginationQueryParams } from "../types";
 import { Logger } from "winston";
 import createHttpError from "http-errors";
-import { validationResult } from "express-validator";
+import { matchedData, validationResult } from "express-validator";
 
 export class TenantController {
   constructor(
@@ -33,9 +33,17 @@ export class TenantController {
 
   async getAll(req: Request, res: Response, next: NextFunction) {
     try {
-      const tenants = await this.tenatService.getAll();
+      const validatedQuery = matchedData(req, {
+        onlyValidData: true,
+      }) as PaginationQueryParams;
+      const [tenants, count] = await this.tenatService.getAll(validatedQuery);
       this.logger.info("All tenant have been fetched");
-      res.json(tenants);
+      res.json({
+        data: tenants,
+        total: count,
+        perPage: validatedQuery.perPage,
+        currentPage: validatedQuery.currentPage,
+      });
     } catch (err) {
       next(err);
     }
