@@ -38,7 +38,7 @@ export class AuthController {
   async register(req: RegisterUserRequest, res: Response, next: NextFunction) {
     const validationRes = validationResult(req);
     if (!validationRes.isEmpty()) {
-      return res.status(400).json({ errors: validationRes.array() });
+      return next(createHttpError(400, validationRes.array()[0].msg as string));
     }
 
     const { firstName, lastName, email, password } = req.body;
@@ -93,7 +93,7 @@ export class AuthController {
   async login(req: RegisterUserRequest, res: Response, next: NextFunction) {
     const validationRes = validationResult(req);
     if (!validationRes.isEmpty()) {
-      return res.status(400).json({ errors: validationRes.array() });
+      return next(createHttpError(400, validationRes.array()[0].msg as string));
     }
 
     const { email, password } = req.body;

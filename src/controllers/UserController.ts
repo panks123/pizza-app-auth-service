@@ -14,7 +14,7 @@ export class UserController {
   async create(req: CreateUserRequest, res: Response, next: NextFunction) {
     const validationRes = validationResult(req);
     if (!validationRes.isEmpty()) {
-      return res.status(400).json({ errors: validationRes.array() });
+      return next(createHttpError(400, validationRes.array()[0].msg as string));
     }
     const { firstName, lastName, email, password, role, tenantId } = req.body;
     try {
@@ -38,7 +38,7 @@ export class UserController {
     // In our project: We are not allowing admin user to change others password
     const validationRes = validationResult(req);
     if (!validationRes.isEmpty()) {
-      return res.status(400).json({ errors: validationRes.array() });
+      return next(createHttpError(400, validationRes.array()[0].msg as string));
     }
 
     const userId = req.params.id;

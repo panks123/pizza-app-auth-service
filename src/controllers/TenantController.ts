@@ -13,7 +13,7 @@ export class TenantController {
   async create(req: CreateTenantRequest, res: Response, next: NextFunction) {
     const validationRes = validationResult(req);
     if (!validationRes.isEmpty()) {
-      return res.status(400).json({ errors: validationRes.array() });
+      return next(createHttpError(400, validationRes.array()[0].msg as string));
     }
 
     const { name, address } = req.body;
@@ -71,7 +71,7 @@ export class TenantController {
   async update(req: CreateTenantRequest, res: Response, next: NextFunction) {
     const validationRes = validationResult(req);
     if (!validationRes.isEmpty()) {
-      return res.status(400).json({ errors: validationRes.array() });
+      return next(createHttpError(400, validationRes.array()[0].msg as string));
     }
     const tenantId = req.params.id;
     if (isNaN(Number(tenantId))) {
