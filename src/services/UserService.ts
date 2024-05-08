@@ -88,12 +88,14 @@ export class UserService {
   }
 
   async updateById(userId: number, userData: LimitedUserData) {
-    const { firstName, lastName, role } = userData;
+    const { firstName, lastName, role, email, tenantId } = userData;
     try {
       return await this.userRepository.update(userId, {
         firstName,
         lastName,
         role,
+        email,
+        tenant: tenantId ? { id: tenantId } : undefined,
       });
     } catch (err) {
       const error = createHttpError(

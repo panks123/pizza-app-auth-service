@@ -46,7 +46,7 @@ export class UserController {
       return next(createHttpError(400, "Invalid url param"));
     }
 
-    const { firstName, lastName, role } = req.body;
+    const { firstName, lastName, role, email, tenantId } = req.body;
     try {
       this.logger.debug("Request for updating user", { id: Number(userId) });
 
@@ -59,6 +59,8 @@ export class UserController {
         firstName,
         lastName,
         role,
+        email,
+        tenantId: tenantId ? tenantId : undefined,
       });
       this.logger.info("User has been updated", { id: userId });
       res.json({ id: Number(userId) });

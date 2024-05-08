@@ -39,18 +39,27 @@ describe("PATCH /users", () => {
         email: "pankaj@testemail.com",
         password: "secret123",
         role: Roles.MANAGER,
-        tenantId: 1,
+        tenantId: 3,
       };
       const user = await userRepository.save(userData);
       const adminToken = jwks.token({ sub: "1", role: Roles.ADMIN });
+
+      // Creating tenants before updating user so that it does not cause foreign key constraint issue
+      const tenantData = {
+        name: "Tenant 1",
+        address: "Tenant 1 address",
+      };
+      const res = await request(app)
+        .post("/tenants")
+        .set("Cookie", [`accessToken=${adminToken}`])
+        .send(tenantData);
 
       const userUpdateData = {
         firstName: "Panka",
         lastName: "Kumar Update",
         email: "pankaj@testemail.com",
-        password: "secret123",
         role: Roles.MANAGER,
-        tenantId: 2,
+        tenantId: Number(res.body.id),
       };
       const response = await request(app)
         .patch(`/users/${user.id}`)
@@ -61,24 +70,33 @@ describe("PATCH /users", () => {
 
     it("should update the user's data in the DB", async () => {
       const userRepository = connection.getRepository(User);
+      const adminToken = jwks.token({ sub: "1", role: Roles.ADMIN });
+
       const userData = {
         firstName: "Panka",
         lastName: "Kumar",
         email: "pankaj@testemail.com",
         password: "secret123",
         role: Roles.MANAGER,
-        tenantId: 1,
+        tenantId: 3,
       };
       const user = await userRepository.save(userData);
-      const adminToken = jwks.token({ sub: "1", role: Roles.ADMIN });
+      // Creating tenants before updating user so that it does not cause foreign key constraint issue
+      const tenantData = {
+        name: "Tenant 1",
+        address: "Tenant 1 address",
+      };
+      const res = await request(app)
+        .post("/tenants")
+        .set("Cookie", [`accessToken=${adminToken}`])
+        .send(tenantData);
 
       const userUpdateData = {
-        firstName: "Panka update",
+        firstName: "Panka",
         lastName: "Kumar Update",
         email: "pankaj@testemail.com",
-        password: "secret123",
         role: Roles.MANAGER,
-        tenantId: 1,
+        tenantId: Number(res.body.id),
       };
       const response = await request(app)
         .patch(`/users/${user.id}`)
