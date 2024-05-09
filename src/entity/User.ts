@@ -22,5 +22,5 @@ export class User {
   role: string;
 
   @ManyToOne(() => Tenant) // Multiple user can belong to one tenant relation
-  tenant: Tenant;
+  tenant: Tenant | null;
 }
