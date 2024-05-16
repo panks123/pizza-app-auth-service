@@ -49,6 +49,9 @@ export class UserService {
         email,
       },
       select: ["id", "email", "firstName", "lastName", "password", "role"],
+      relations: {
+        tenant: true,
+      },
     });
   }
 
