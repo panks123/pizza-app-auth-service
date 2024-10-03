@@ -6,12 +6,15 @@ import tenantRouter from "./routes/tenant";
 import userRouter from "./routes/user";
 import cors from "cors";
 import { globalErrorHandler } from "./middlewares/globalErrorHandler";
+import { Config } from "./config";
 
 const app = express();
 
+const ALLOWED_ORIGINS = [Config.CLIENT_UI, Config.ADMIN_UI];
+
 app.use(
   cors({
-    origin: ["http://localhost:5173"],
+    origin: ALLOWED_ORIGINS as string[],
     credentials: true,
   }),
 );
