@@ -8,6 +8,7 @@ import { JwtPayload } from "jsonwebtoken";
 import { TokenService } from "../services/TokenService";
 import { CredentialService } from "../services/CredentialService";
 import { Roles } from "../constants";
+import { Config } from "../config";
 
 export class AuthController {
   constructor(
@@ -19,7 +20,7 @@ export class AuthController {
 
   setAccessTokenCookie(res: Response, accessToken: string) {
     res.cookie("accessToken", accessToken, {
-      domain: "localhost",
+      domain: Config.MAIN_DOMAIN,
       sameSite: "strict",
       maxAge: 3600000, // 60* 1000 * 60 (time in ms) => for 1 hour
       httpOnly: true,
@@ -28,7 +29,7 @@ export class AuthController {
 
   setRefreshTokenCookie(res: Response, refreshToken: string) {
     res.cookie("refreshToken", refreshToken, {
-      domain: "localhost",
+      domain: Config.MAIN_DOMAIN,
       sameSite: "strict",
       maxAge: 31536000000, // 60* 1000 * 60 * 24 * 365 (time in ms) => for 1 year
       httpOnly: true,

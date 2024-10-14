@@ -10,7 +10,7 @@ import { Config } from "./config";
 
 const app = express();
 
-const ALLOWED_ORIGINS = [Config.CLIENT_UI, Config.ADMIN_UI];
+const ALLOWED_ORIGINS = [Config.CLIENT_UI_DOMAIN, Config.ADMIN_UI_DOMAIN];
 
 app.use(
   cors({
