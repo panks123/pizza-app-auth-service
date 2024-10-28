@@ -23,7 +23,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("Welcome to Auth Service");
+  res.send("Welcome to Auth Service from K8s");
 });
 
 app.use("/auth", authRouter);
