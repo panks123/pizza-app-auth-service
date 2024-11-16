@@ -219,8 +219,16 @@ export class AuthController {
       this.logger.info("User has been logged out", { userId });
 
       // Clear cookies
-      res.clearCookie("accessToken");
-      res.clearCookie("refreshToken");
+      res.clearCookie("accessToken", {
+        httpOnly: true,
+        domain: Config.MAIN_DOMAIN,
+        sameSite: "strict",
+      });
+      res.clearCookie("refreshToken", {
+        httpOnly: true,
+        domain: Config.MAIN_DOMAIN,
+        sameSite: "strict",
+      });
       res.json({});
     } catch (err) {
       next(err);
